@@ -4,19 +4,23 @@ import {
   ClipboardList,
   Coins,
   Database,
+  Gauge,
   GraduationCap,
   Hourglass,
   LayoutDashboard,
   LayoutGrid,
   LineChart,
   type LucideIcon,
+  Ruler,
   SlidersHorizontal,
   Table2,
+  Tags,
   TrendingUp,
+  Users,
   Waypoints,
 } from 'lucide-react';
 
-export type NavGroup = 'Benchmarking' | 'Capital Allocation';
+export type NavGroup = 'Overview' | 'Operate' | 'Benchmarking' | 'Capital Allocation';
 
 export interface NavItem {
   path: string;
@@ -27,8 +31,16 @@ export interface NavItem {
 }
 
 export const NAV_ITEMS: NavItem[] = [
+  // --- Overview (v3 cockpit, landing) ---
+  { path: '/', label: 'Control Tower', short: 'Cockpit', icon: Gauge, group: 'Overview' },
+
+  // --- Operate (v3) ---
+  { path: '/pricing', label: 'Job Pricing', short: 'Pricing', icon: Tags, group: 'Operate' },
+  { path: '/structure', label: 'Ranges Designer', short: 'Structure', icon: Ruler, group: 'Operate' },
+  { path: '/employees', label: 'Employees & Architecture', short: 'Employees', icon: Users, group: 'Operate' },
+
   // --- Benchmarking (v1) ---
-  { path: '/', label: 'Summary Dashboard', short: 'Dashboard', icon: LayoutDashboard, group: 'Benchmarking' },
+  { path: '/dashboard', label: 'Summary Dashboard', short: 'Dashboard', icon: LayoutDashboard, group: 'Benchmarking' },
   { path: '/worksheet', label: 'Benchmark Worksheet', short: 'Worksheet', icon: Table2, group: 'Benchmarking' },
   { path: '/summary', label: 'Executive Summary', short: 'Summary', icon: LineChart, group: 'Benchmarking' },
   { path: '/budget', label: 'Budget Simulator', short: 'Budget', icon: Calculator, group: 'Benchmarking' },

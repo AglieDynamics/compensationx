@@ -60,6 +60,8 @@ export interface GlobalAssumptions {
   salaryInflation: number;
   coiHorizon: number;
   discountRate: number;
+  /** Years to age survey data to the as-of date: factor = (1+salaryInflation)^agingYears. */
+  agingYears: number;
 }
 
 export const DEFAULT_ASSUMPTIONS: GlobalAssumptions = {
@@ -73,6 +75,7 @@ export const DEFAULT_ASSUMPTIONS: GlobalAssumptions = {
   salaryInflation: SALARY_INFLATION,
   coiHorizon: COI_HORIZON_DEFAULT,
   discountRate: DISCOUNT_RATE_DEFAULT,
+  agingYears: 0,
 };
 
 /** Per-segment net-new inputs the salary survey lacks (§2B). null = not provided. */
@@ -209,3 +212,75 @@ export function resolveSegmentInputs(
     productivityIndex: optional('productivityIndex'),
   };
 }
+
+// ----------------------------------------------------------------------------
+// v3 — Appendix B constants (single source of truth; nothing hard-coded in UI)
+// ----------------------------------------------------------------------------
+
+export const PRICING = {
+  policyTargetCompa: 0.95, // Target = midpoint × this
+  compaPolicyBand: [0.9, 1.1] as const, // outside → equity flag / approval
+  equityTolerancePct: 0.05, // peer comparison tolerance
+  defaultRangeSpread: 0.5, // S
+  matchPercentile: 0.5, // "match" posture
+} as const;
+
+export const STRUCTURE = {
+  fixedProgressionStep: 0.18, // midpoint progression p
+  overlapExcessiveThreshold: 0.5,
+  compressionThresholdPct: 0.05, // manager vs subordinate-median
+  policyMidpointCompa: 0.95, // cost-to-policy-midpoint posture
+  greenCirclePenaltyFactor: 10, // structure-debt penalty per green-circle, × salary inflation
+} as const;
+
+/** Range/Market Confidence Index sub-score weights (sum = 1.0). */
+export const CONFIDENCE_WEIGHTS = {
+  dataFreshness: 0.3,
+  providerAgreement: 0.2,
+  benchmarkMatch: 0.3,
+  architectureStability: 0.2,
+} as const;
+
+export const CONFIDENCE_DEFAULTS = {
+  dataFreshness: 0.85,
+  providerAgreement: 1.0, // single provider
+  benchmarkMatch: 0.8, // when JobArchitecture confidence absent
+  architectureStability: 0.9,
+} as const;
+
+/** Recommendation scorecard weights (normalized sub-scores 0..1; sum = 1.0). */
+export const RECO_WEIGHTS = {
+  externalGapSeverity: 0.2,
+  internalEquityRisk: 0.15,
+  performanceCriticality: 0.15,
+  attritionRisk: 0.2,
+  replacementDifficulty: 0.1,
+  revenueSensitivity: 0.1,
+  costToCorrectInverse: 0.05,
+  productivityUpside: 0.05,
+} as const;
+
+/** Geographic pay differentials (× market reference). */
+export const GEO_DIFFERENTIAL: Record<string, number> = { HQ: 1.0, Regional: 0.92 };
+/** Job-family pay differentials (× market reference). Single-LOB survey ⇒ all 1.0 by default. */
+export const FAMILY_DIFFERENTIAL: Record<string, number> = {
+  Strategy: 1.0,
+  Operations: 1.0,
+  Technology: 1.0,
+  Risk: 1.0,
+};
+
+export const GEOGRAPHIES: readonly string[] = ['HQ', 'Regional'];
+export const JOB_FAMILIES: readonly string[] = ['Strategy', 'Operations', 'Technology', 'Risk'];
+
+/** Replacement difficulty by level (0..1) for the recommendation scorecard. */
+export const REPLACEMENT_DIFFICULTY: Record<Level, number> = {
+  An: 0.25,
+  As: 0.4,
+  M: 0.6,
+  SM: 0.8,
+  Pr: 0.95,
+};
+
+/** Grade band per career level (Appendix D). */
+export const LEVEL_TO_GRADE: Record<Level, string> = { An: 'G2', As: 'G3', M: 'G4', SM: 'G5', Pr: 'G6' };

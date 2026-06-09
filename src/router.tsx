@@ -1,11 +1,11 @@
 import { lazy, Suspense } from 'react';
 import { createBrowserRouter, Navigate } from 'react-router-dom';
 import { AppLayout } from './App';
-import { Dashboard } from './modules/dashboard/Dashboard';
+import { Cockpit } from './modules/operate/Cockpit';
 import { RouteFallback } from './components/layout/RouteFallback';
 
-// Dashboard is eager (landing route); the rest are code-split so heavy deps
-// (notably `xlsx`, used only by Data Ingestion) load on demand.
+// Cockpit is eager (landing route); the rest are code-split.
+const Dashboard = lazy(() => import('./modules/dashboard/Dashboard').then((m) => ({ default: m.Dashboard })));
 const Worksheet = lazy(() => import('./modules/worksheet/Worksheet').then((m) => ({ default: m.Worksheet })));
 const ExecutiveSummary = lazy(() =>
   import('./modules/summary/ExecutiveSummary').then((m) => ({ default: m.ExecutiveSummary })),
@@ -26,6 +26,11 @@ const CostOfInaction = lazy(() => import('./modules/capital/CostOfInaction').the
 const TotalCost = lazy(() => import('./modules/capital/TotalCost').then((m) => ({ default: m.TotalCost })));
 const CapitalBrief = lazy(() => import('./modules/capital/CapitalBrief').then((m) => ({ default: m.CapitalBrief })));
 
+// --- Operate (v3) ---
+const JobPricing = lazy(() => import('./modules/operate/JobPricing').then((m) => ({ default: m.JobPricing })));
+const RangesDesigner = lazy(() => import('./modules/operate/RangesDesigner').then((m) => ({ default: m.RangesDesigner })));
+const EmployeesManager = lazy(() => import('./modules/operate/EmployeesManager').then((m) => ({ default: m.EmployeesManager })));
+
 function lazyRoute(element: React.ReactNode) {
   return <Suspense fallback={<RouteFallback />}>{element}</Suspense>;
 }
@@ -36,7 +41,11 @@ export const router = createBrowserRouter(
       path: '/',
       element: <AppLayout />,
       children: [
-        { index: true, element: <Dashboard /> },
+        { index: true, element: <Cockpit /> },
+        { path: 'pricing', element: lazyRoute(<JobPricing />) },
+        { path: 'structure', element: lazyRoute(<RangesDesigner />) },
+        { path: 'employees', element: lazyRoute(<EmployeesManager />) },
+        { path: 'dashboard', element: lazyRoute(<Dashboard />) },
         { path: 'worksheet', element: lazyRoute(<Worksheet />) },
         { path: 'summary', element: lazyRoute(<ExecutiveSummary />) },
         { path: 'budget', element: lazyRoute(<BudgetSimulator />) },

@@ -56,18 +56,66 @@ market** on Manager/Senior Manager. With zero new data:
 
 ---
 
+## v3 — Compensation Intelligence Cockpit
+
+v3 makes the platform **operational**: price individual hires, design and govern the salary structure,
+and unify everything into an executive cockpit. The landing page is now the **Control Tower**. New
+compute lives in pure, unit-tested `src/lib/comp.ts` (pricing + range/structure) and
+`src/lib/economics.ts` (workforce-economics metric pack); components render only.
+
+### Prerequisite data layer — Employees & Job Architecture (`/employees`)
+
+The survey gives *market* reference; v3 needs *internal* data. A deterministic synthetic seed
+(`npm run gen:employees`, fixed mulberry32 seed `0xC0FFEE`, committed to `src/data/employees.json`)
+ships **551 employees** matching the Greenland firm distribution (An 210 / As 174 / M 87 / SM 67 /
+Pr 13) across 4 job families and 2 geographies, so pricing/ranges/cockpit all light up on first run
+(provenance = *Assumed*). Edit any record inline, download the CSV template, upload your own (flips to
+*Measured*), or **Reset to synthetic**.
+
+### Modules
+
+| Module | Route | What it does |
+|--------|-------|--------------|
+| **Control Tower** (landing) | `/` | Enterprise KPI strip (with assumption/empty-states for revenue-dependent metrics), job-family positioning console, cohort adjustment simulator, workforce-economics views (surfacing the v2 lenses), and a rules-based recommendation queue with expandable score breakdowns. |
+| **Job Pricing** | `/pricing` | Turn a hiring request into a governed **Floor / Target / Stretch** offer with an adjustment-by-adjustment rationale waterfall, internal-equity flags, approval state, and saved-case session analytics. |
+| **Ranges Designer** | `/structure` | Design (benchmark / fixed / regression progression), test, and **publish** salary structures; map employees (compa-ratio, range penetration, green/red-circle); cost-to-policy, **Range Confidence Index**, **Equity Tension**, **Cost of Structure Debt**, **Talent Scarcity Premium**. |
+
+The v1 **Summary Dashboard** moved from `/` to `/dashboard` (component unchanged); all v1/v2 modules and
+routes are otherwise intact.
+
+### Heuristic vs measured (explainable, not ML)
+
+Every "AI" feature in v3 is a **transparent, deterministic heuristic**, labeled
+*"rule/statistics-based; ML upgrade is platform-track"*: anomaly flags (z-score / IQR within peer
+buckets, compression, progression inconsistency), attrition risk (the v2 retention logistic),
+greedy constrained budget allocation, and templated board narrative. Provenance (Measured / Entered /
+Assumed) and the **Range/Market Confidence Index** extend the v2 system. Default assumptions live only in
+`src/lib/assumptions.ts` (Appendix B).
+
+### Platform Track (out of scope — documented, not stubbed)
+
+The following are **deliberately not built** in this client-side app and are documented as the backend
+platform track: multi-provider live survey ingestion + HRIS/payroll/finance/ATS integration; SSO + RBAC
++ pay masking + immutable audit + maker-checker approval workflows + multi-tenant; **true ML** (anomaly,
+attrition prediction, pay elasticity, forecaster), a constrained-optimization budget solver, a
+market-movement autopilot, closed-loop outcome learning, and a natural-language copilot. Nothing above is
+faked as UI — each surfaced heuristic states its ML-upgrade path.
+
+---
+
 ## Quick start
 
 ```bash
 npm install
-npm run dev          # http://localhost:5173  → Summary Dashboard renders immediately
+npm run dev          # http://localhost:5173  → Control Tower cockpit renders immediately
 ```
 
 Other scripts:
 
 ```bash
-npm run ingest       # (re)generate src/data/greenland.json from a source workbook, or the fixture
-npm run test         # Vitest: §5 compute assertions + ingest round-trip + render smoke tests
+npm run ingest         # (re)generate src/data/greenland.json from a source workbook, or the fixture
+npm run gen:employees  # (re)generate the deterministic synthetic employee seed (src/data/employees.json)
+npm run test           # Vitest: §5 compute assertions + ingest round-trip + render + capital + comp + heuristics
 npm run build        # type-check + production build to dist/
 npm run preview      # serve the production build
 npm run typecheck    # tsc --noEmit

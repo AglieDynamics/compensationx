@@ -159,6 +159,16 @@ export const useInputsStore = create<InputsState>()(
         granularity: s.granularity,
         orgMapping: s.orgMapping,
       }),
+      // Backfill any assumption keys missing from legacy persisted state (e.g. v2
+      // data lacks `agingYears`) so derived figures never see `undefined` → NaN.
+      merge: (persisted, current) => {
+        const p = (persisted as Partial<InputsState> | undefined) ?? {};
+        return {
+          ...current,
+          ...p,
+          assumptions: { ...DEFAULT_ASSUMPTIONS, ...(p.assumptions ?? {}) },
+        };
+      },
       onRehydrateStorage: () => (state) => state?.setHasHydrated(true),
     },
   ),
