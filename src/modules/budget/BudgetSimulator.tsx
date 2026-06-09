@@ -16,6 +16,7 @@ import { COMPONENT_LABELS } from '@/domain/components';
 import { budgetSimulation } from '@/lib/benchmark';
 import { formatPercentileLabel } from '@/lib/format';
 import { useActiveTable, useAppStore } from '@/store/useAppStore';
+import { ScenarioDeltaNote } from '@/components/capital/ScenarioDeltaNote';
 import { BudgetHeadline } from './BudgetHeadline';
 import { BudgetTable } from './BudgetTable';
 
@@ -63,6 +64,7 @@ export function BudgetSimulator() {
         </>
       }
     >
+      <ScenarioDeltaNote />
       {table && sim && hasBudget ? (
         <>
           <BudgetHeadline

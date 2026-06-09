@@ -1,13 +1,58 @@
 # CompBench
 
-An interactive **compensation-benchmarking workspace** that reproduces the Vencon Research
-Consultant Salary Survey methodology. Position your firm against an anonymized market panel —
-level by level, component by component, percentile by percentile — and plan pay budgets against a
-chosen market target.
+A **workforce capital-allocation platform** built on top of an interactive
+**compensation-benchmarking workspace** that reproduces the Vencon Research Consultant Salary Survey
+methodology. v1 answers *"are we at market, and what does parity cost?"*; v2 answers *"where should
+the next unit of pay go to create or protect the most enterprise value, and what does waiting cost?"*
 
 Fully client-side: no backend, no network at runtime. Ships with a real **Greenland** seed
 dataset (Basic Salary, firm-weighted, 2025) so it works with zero setup, and ingests a
 Vencon-format `.xlsx` workbook for the full picture.
+
+---
+
+## v2 — Workforce Capital Allocation
+
+A second navigation group, **Capital Allocation**, reframes benchmarking into capital allocation
+through five analytical lenses plus a synthesis brief. All new compute lives in a pure, unit-tested
+`src/lib/capital.ts` (parallel to `benchmark.ts`); components only render.
+
+| Lens | Route | Question | Needs (beyond the survey) |
+|------|-------|----------|---------------------------|
+| **Inputs & Assumptions** | `/capital/inputs` | — | Manual grid, CSV/XLSX templates + upload, editable Appendix-A assumptions, scenario editor |
+| **Human Capital Convexity** | `/capital/convexity` | Where do small pay moves unlock the most retained value? | attrition, replacement multiple (defaults) |
+| **Workforce Value Density** | `/capital/value-density` | Where is value-per-cost concentrated vs diluted? | **value per head** |
+| **Pay-Productivity Frontier** | `/capital/frontier` | Is pay ahead of, behind, or aligned with output? | **value per head / productivity** |
+| **Cost of Inaction** | `/capital/cost-of-inaction` | What does under-market positioning leak over time? | attrition, inflation (defaults) |
+| **Total Workforce Cost** | `/capital/total-cost` | What is the *true* loaded cost, and where are false savings? | overtime, contingent, employer contribution |
+| **Capital Allocation Brief** | `/capital/brief` | Where should capital go? | synthesis of all five + printable export |
+
+### Provenance — Measured / Entered / Assumed
+
+Every input carries a provenance, and **every derived figure inherits the weakest provenance among
+its inputs** (`MEASURED > ENTERED > ASSUMED`). A view computed entirely on defaults says so plainly
+("Modeled on default assumptions"). Provenance chips sit next to headline numbers; edits to the
+assumptions panel flip dependent figures to *Entered*; uploaded actuals flip them to *Measured*.
+
+### What is modeled vs measured (out of the box)
+
+The Greenland seed positions the firm **over market** on Analyst/Associate/Principal and **under
+market** on Manager/Senior Manager. With zero new data:
+
+- **Convexity, Cost of Inaction, Total Cost** render fully on Appendix-A defaults (clearly tagged
+  *Assumed*). Cost of Inaction reframes the v1 ≈ −1,704 GND k present "saving" as multi-year leakage.
+- **Value Density & the Frontier** need `valuePerHead` — they show a tidy empty-state with a
+  one-click **"Load illustrative value data"** (tagged *Assumed*) and a link to Inputs & Assumptions.
+- All default assumptions live solely in `src/lib/assumptions.ts` (Appendix A) — the single source of
+  truth, editable in the Assumptions panel.
+
+### Inputs, assumptions & scenarios
+
+- **Inputs & Assumptions** (`/capital/inputs`): edit any per-segment input inline; download CSV
+  templates (attrition / value / cost), fill, and re-import (loaded as *Measured*); tune the global
+  assumptions; create and edit **scenarios** (per-level target-percentile pay moves).
+- **Scenarios** layer proposed pay moves on the baseline; Convexity, Cost of Inaction, the Budget
+  Simulator and the Brief all show Baseline → Scenario deltas when a scenario is active.
 
 ---
 

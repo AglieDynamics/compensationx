@@ -1,9 +1,7 @@
 import { NavLink } from 'react-router-dom';
 import { useAppStore } from '@/store/useAppStore';
 import { cn } from '@/lib/cn';
-import { NAV_ITEMS, type Tier } from './nav';
-
-const TIER_LABEL: Record<Tier, string> = { MUST: 'Core', SHOULD: 'Extended', STRETCH: 'Pulse' };
+import { NAV_ITEMS } from './nav';
 
 export function SideNav() {
   const source = useAppStore((s) => s.source);
@@ -15,20 +13,20 @@ export function SideNav() {
         <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-navy-500 font-bold">C</div>
         <div className="leading-tight">
           <div className="text-[0.95rem] font-semibold tracking-tight">CompBench</div>
-          <div className="text-[0.68rem] text-white/55">Compensation benchmarking</div>
+          <div className="text-[0.68rem] text-white/55">Workforce capital allocation</div>
         </div>
       </div>
 
       <nav className="scrollbar-thin flex-1 space-y-0.5 overflow-y-auto px-3 py-2">
         {NAV_ITEMS.map((item, i) => {
-          const prevTier = i > 0 ? NAV_ITEMS[i - 1]?.tier : undefined;
-          const showHeader = item.tier !== prevTier;
+          const prevGroup = i > 0 ? NAV_ITEMS[i - 1]?.group : undefined;
+          const showHeader = item.group !== prevGroup;
           const Icon = item.icon;
           return (
             <div key={item.path}>
               {showHeader && (
                 <div className="px-3 pb-1 pt-3 text-[0.62rem] font-semibold uppercase tracking-wider text-white/35">
-                  {TIER_LABEL[item.tier]}
+                  {item.group}
                 </div>
               )}
               <NavLink

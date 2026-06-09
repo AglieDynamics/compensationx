@@ -17,6 +17,15 @@ const CareerIssues = lazy(() => import('./modules/career/CareerIssues').then((m)
 const DataIngestion = lazy(() => import('./modules/data/DataIngestion').then((m) => ({ default: m.DataIngestion })));
 const PulseSurvey = lazy(() => import('./modules/pulse/PulseSurvey').then((m) => ({ default: m.PulseSurvey })));
 
+// --- Capital Allocation (v2) ---
+const InputsAssumptions = lazy(() => import('./modules/capital/InputsAssumptions').then((m) => ({ default: m.InputsAssumptions })));
+const Convexity = lazy(() => import('./modules/capital/Convexity').then((m) => ({ default: m.Convexity })));
+const ValueDensity = lazy(() => import('./modules/capital/ValueDensity').then((m) => ({ default: m.ValueDensity })));
+const Frontier = lazy(() => import('./modules/capital/Frontier').then((m) => ({ default: m.Frontier })));
+const CostOfInaction = lazy(() => import('./modules/capital/CostOfInaction').then((m) => ({ default: m.CostOfInaction })));
+const TotalCost = lazy(() => import('./modules/capital/TotalCost').then((m) => ({ default: m.TotalCost })));
+const CapitalBrief = lazy(() => import('./modules/capital/CapitalBrief').then((m) => ({ default: m.CapitalBrief })));
+
 function lazyRoute(element: React.ReactNode) {
   return <Suspense fallback={<RouteFallback />}>{element}</Suspense>;
 }
@@ -34,6 +43,13 @@ export const router = createBrowserRouter(
         { path: 'career', element: lazyRoute(<CareerIssues />) },
         { path: 'data', element: lazyRoute(<DataIngestion />) },
         { path: 'pulse', element: lazyRoute(<PulseSurvey />) },
+        { path: 'capital/inputs', element: lazyRoute(<InputsAssumptions />) },
+        { path: 'capital/convexity', element: lazyRoute(<Convexity />) },
+        { path: 'capital/value-density', element: lazyRoute(<ValueDensity />) },
+        { path: 'capital/frontier', element: lazyRoute(<Frontier />) },
+        { path: 'capital/cost-of-inaction', element: lazyRoute(<CostOfInaction />) },
+        { path: 'capital/total-cost', element: lazyRoute(<TotalCost />) },
+        { path: 'capital/brief', element: lazyRoute(<CapitalBrief />) },
         { path: '*', element: <Navigate to="/" replace /> },
       ],
     },

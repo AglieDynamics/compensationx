@@ -2,12 +2,16 @@ import { useEffect } from 'react';
 import { Outlet } from 'react-router-dom';
 import { SideNav } from '@/components/layout/SideNav';
 import { useAppStore } from '@/store/useAppStore';
+import { useInputsStore } from '@/store/inputsStore';
+import { useScenarioStore } from '@/store/scenarioStore';
 
 /** Root layout: fixed side nav + scrolling content area. */
 export function AppLayout() {
   // Mounted guard: only read persisted state after the first client render.
   useEffect(() => {
     void useAppStore.persist.rehydrate();
+    void useInputsStore.persist.rehydrate();
+    void useScenarioStore.persist.rehydrate();
   }, []);
 
   return (
