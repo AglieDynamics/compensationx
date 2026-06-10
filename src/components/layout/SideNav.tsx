@@ -10,9 +10,15 @@ export function SideNav() {
   return (
     <aside className="flex h-screen w-[232px] shrink-0 flex-col border-r border-border bg-navy-900 text-white">
       <div className="flex items-center gap-2.5 px-5 py-5">
-        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-navy-500 font-bold">C</div>
+        <img
+          src="/logo.png"
+          alt="Crypto Payscale"
+          width={32}
+          height={32}
+          className="h-8 w-8 shrink-0 rounded-lg"
+        />
         <div className="leading-tight">
-          <div className="text-[0.95rem] font-semibold tracking-tight">CompBench</div>
+          <div className="text-[0.95rem] font-semibold tracking-tight">Crypto Payscale</div>
           <div className="text-[0.68rem] text-white/55">Workforce capital allocation</div>
         </div>
       </div>
