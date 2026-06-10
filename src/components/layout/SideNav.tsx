@@ -1,4 +1,4 @@
-import { NavLink } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 import { useAppStore } from '@/store/useAppStore';
 import { cn } from '@/lib/cn';
 import { NAV_ITEMS } from './nav';
@@ -9,7 +9,7 @@ export function SideNav() {
 
   return (
     <aside className="flex h-screen w-[232px] shrink-0 flex-col border-r border-border bg-navy-900 text-white">
-      <div className="flex items-center gap-2.5 px-5 py-5">
+      <Link to="/app" className="flex items-center gap-2.5 px-5 py-5">
         <img
           src="/logo.png"
           alt="Crypto Payscale"
@@ -21,7 +21,7 @@ export function SideNav() {
           <div className="text-[0.95rem] font-semibold tracking-tight">Crypto Payscale</div>
           <div className="text-[0.68rem] text-white/55">Workforce capital allocation</div>
         </div>
-      </div>
+      </Link>
 
       <nav className="scrollbar-thin flex-1 space-y-0.5 overflow-y-auto px-3 py-2">
         {NAV_ITEMS.map((item, i) => {
@@ -37,7 +37,7 @@ export function SideNav() {
               )}
               <NavLink
                 to={item.path}
-                end={item.path === '/'}
+                end={item.path === '/app'}
                 className={({ isActive }) =>
                   cn(
                     'group flex items-center gap-2.5 rounded-lg px-3 py-2 text-[0.82rem] font-medium transition-colors',

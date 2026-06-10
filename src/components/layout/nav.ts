@@ -31,8 +31,8 @@ export interface NavItem {
 }
 
 export const NAV_ITEMS: NavItem[] = [
-  // --- Overview (v3 cockpit, landing) ---
-  { path: '/', label: 'Control Tower', short: 'Cockpit', icon: Gauge, group: 'Overview' },
+  // --- Overview (v3 cockpit) — platform home; the public landing lives at '/'. ---
+  { path: '/app', label: 'Control Tower', short: 'Cockpit', icon: Gauge, group: 'Overview' },
 
   // --- Operate (v3) ---
   { path: '/pricing', label: 'Job Pricing', short: 'Pricing', icon: Tags, group: 'Operate' },

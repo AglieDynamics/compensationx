@@ -1,6 +1,7 @@
 import { lazy, Suspense } from 'react';
 import { createBrowserRouter, Navigate } from 'react-router-dom';
 import { AppLayout } from './App';
+import { Landing } from './modules/landing/Landing';
 import { Cockpit } from './modules/operate/Cockpit';
 import { RouteFallback } from './components/layout/RouteFallback';
 
@@ -37,11 +38,13 @@ function lazyRoute(element: React.ReactNode) {
 
 export const router = createBrowserRouter(
   [
+    // Public marketing landing — renders standalone, outside the app shell.
+    { path: '/', element: <Landing /> },
     {
-      path: '/',
+      // Platform — every authenticated/app surface lives under the side-nav shell.
       element: <AppLayout />,
       children: [
-        { index: true, element: <Cockpit /> },
+        { path: 'app', element: <Cockpit /> },
         { path: 'pricing', element: lazyRoute(<JobPricing />) },
         { path: 'structure', element: lazyRoute(<RangesDesigner />) },
         { path: 'employees', element: lazyRoute(<EmployeesManager />) },
