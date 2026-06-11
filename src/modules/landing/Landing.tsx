@@ -6,6 +6,15 @@ import './landing.css';
 const PLATFORM_PATH = '/capital/cost-of-inaction';
 const AGILE_DYNAMICS = 'https://agiledynamics.co';
 
+/** Outbound targets for the five ecosystem-layer cards. */
+const ECOSYSTEM_LINKS = {
+  astroArmadillos: 'https://astroarmadillos.io/',
+  cryptoPayScale: 'https://cryptopayscale.io/',
+  syntheticEquity: 'https://syntheticequity.io/',
+  agileDynamics: 'https://agiledynamics.co/',
+  cryptoPayroll: 'https://cryptopayroll.ai/',
+} as const;
+
 /**
  * CryptoPayScale marketing landing — a 1:1 port of CryptoPayScale_Website.html.
  * Renders standalone (outside the app shell) at `/`; all styling is scoped under
@@ -552,7 +561,12 @@ export function Landing() {
             <span className="step">Execute</span>
           </div>
           <div className="layers">
-            <div className="layer reveal">
+            <a
+              className="layer reveal"
+              href={ECOSYSTEM_LINKS.astroArmadillos}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               <div className="layer-num">Layer 01</div>
               <h4>AstroArmadillos.io</h4>
               <p>
@@ -560,8 +574,13 @@ export function Landing() {
                 through gamified learning, NFTs, $ASTROS and learn-to-earn experiences.
               </p>
               <div className="layer-role">Educate &amp; Adopt</div>
-            </div>
-            <div className="layer hot reveal">
+            </a>
+            <a
+              className="layer hot reveal"
+              href={ECOSYSTEM_LINKS.cryptoPayScale}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               <div className="layer-num">Layer 02</div>
               <h4>CryptoPayScale.io</h4>
               <p>
@@ -570,8 +589,13 @@ export function Landing() {
                 intelligence.
               </p>
               <div className="layer-role">Benchmark &amp; Model</div>
-            </div>
-            <div className="layer reveal">
+            </a>
+            <a
+              className="layer reveal"
+              href={ECOSYSTEM_LINKS.syntheticEquity}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               <div className="layer-num">Layer 03</div>
               <h4>SyntheticEquity.io</h4>
               <p>
@@ -579,8 +603,13 @@ export function Landing() {
                 ownership-like economics without voting dilution or transfer of actual shares.
               </p>
               <div className="layer-role">Incentivise</div>
-            </div>
-            <div className="layer reveal">
+            </a>
+            <a
+              className="layer reveal"
+              href={ECOSYSTEM_LINKS.agileDynamics}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               <div className="layer-num">Layer 04</div>
               <h4>AgileDynamics Advisory</h4>
               <p>
@@ -588,8 +617,13 @@ export function Landing() {
                 governance, contribution logic, compliance model and implementation roadmap.
               </p>
               <div className="layer-role">Design</div>
-            </div>
-            <div className="layer reveal">
+            </a>
+            <a
+              className="layer reveal"
+              href={ECOSYSTEM_LINKS.cryptoPayroll}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               <div className="layer-num">Layer 05</div>
               <h4>CryptoPayroll.ai</h4>
               <p>
@@ -598,7 +632,7 @@ export function Landing() {
                 KYC/AML-ready workflows.
               </p>
               <div className="layer-role">Execute &amp; Pay</div>
-            </div>
+            </a>
           </div>
           <div className="takeaway reveal" style={{ marginLeft: 'auto', marginRight: 'auto' }}>
             Compliance with the EU Pay Transparency Directive is structurally impossible without
