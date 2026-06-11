@@ -15,12 +15,17 @@ const AGILE_DYNAMICS = 'https://agiledynamics.co';
 export function Landing() {
   const rootRef = useRef<HTMLDivElement>(null);
   const [scrolled, setScrolled] = useState(false);
+  const [showTop, setShowTop] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const closeMenu = () => setMenuOpen(false);
+  const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
 
-  // Nav background state on scroll.
+  // Nav background state + back-to-top visibility on scroll.
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 40);
+    const onScroll = () => {
+      setScrolled(window.scrollY > 40);
+      setShowTop(window.scrollY > 600);
+    };
     window.addEventListener('scroll', onScroll, { passive: true });
     onScroll();
     return () => window.removeEventListener('scroll', onScroll);
@@ -110,7 +115,9 @@ export function Landing() {
       <header id="top">
         <div className="hero-bg" />
         <div className="hero-inner">
-          <div className="hero-tag">Compensation Intelligence · HR Tech · Web3</div>
+          <div className="hero-tag">
+            Compensation Intelligence · Blockchain · DeFi · FinTech · AI/ML · iGaming · PSPs · Web3
+          </div>
           <h1>
             The benchmark is where pay <span className="accent">stops being guesswork</span>
           </h1>
@@ -642,6 +649,24 @@ export function Landing() {
           </small>
         </div>
       </footer>
+
+      <button
+        className={showTop ? 'to-top show' : 'to-top'}
+        aria-label="Back to top"
+        onClick={scrollToTop}
+      >
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth={2.5}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M12 19V5M5 12l7-7 7 7" />
+        </svg>
+      </button>
     </div>
   );
 }
