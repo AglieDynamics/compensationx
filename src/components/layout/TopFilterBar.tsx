@@ -13,7 +13,7 @@ interface TopFilterBarProps {
 /** Sticky per-module header: title + scope chip, with an optional filter row. */
 export function TopFilterBar({ title, subtitle, module, controls, className }: TopFilterBarProps) {
   return (
-    <div className={cn('sticky top-0 z-30 border-b border-border bg-bg/85 backdrop-blur-sm', className)}>
+    <div className={cn('z-30 border-b border-border bg-bg/85 backdrop-blur-sm lg:sticky lg:top-0', className)}>
       <div className="flex flex-wrap items-start justify-between gap-3 px-4 pb-3 pt-4 sm:px-6">
         <div>
           <div className="flex items-center gap-2">
