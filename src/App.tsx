@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import { SideNav } from '@/components/layout/SideNav';
 import { MobileTopBar } from '@/components/layout/MobileTopBar';
+import { WelcomeTour } from '@/modules/onboarding/WelcomeTour';
 import { useAppStore } from '@/store/useAppStore';
 import { useInputsStore } from '@/store/inputsStore';
 import { useScenarioStore } from '@/store/scenarioStore';
@@ -41,6 +42,7 @@ export function AppLayout() {
           <Outlet />
         </main>
       </div>
+      <WelcomeTour />
     </div>
   );
 }

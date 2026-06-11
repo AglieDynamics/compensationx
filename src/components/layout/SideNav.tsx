@@ -1,7 +1,8 @@
 import { Link, NavLink, useNavigate } from 'react-router-dom';
-import { LogOut, X } from 'lucide-react';
+import { LifeBuoy, LogOut, X } from 'lucide-react';
 import { useAppStore } from '@/store/useAppStore';
 import { useAuthStore } from '@/store/authStore';
+import { useOnboardingStore } from '@/store/onboardingStore';
 import { cn } from '@/lib/cn';
 import { NAV_ITEMS } from './nav';
 
@@ -16,6 +17,7 @@ export function SideNav({ open, onClose }: SideNavProps) {
   const source = useAppStore((s) => s.source);
   const country = useAppStore((s) => s.dataset.meta.country);
   const signOut = useAuthStore((s) => s.signOut);
+  const restartTour = useOnboardingStore((s) => s.restart);
   const navigate = useNavigate();
 
   return (
@@ -98,6 +100,17 @@ export function SideNav({ open, onClose }: SideNavProps) {
               {source === 'uploaded' ? 'Uploaded' : country}
             </span>
           </div>
+          <button
+            type="button"
+            onClick={() => {
+              restartTour();
+              onClose();
+            }}
+            className="flex w-full items-center gap-1.5 text-white/45 transition-colors hover:text-white/80"
+          >
+            <LifeBuoy size={13} strokeWidth={2} className="shrink-0" />
+            <span>Replay tour</span>
+          </button>
           <button
             type="button"
             onClick={() => {
