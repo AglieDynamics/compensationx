@@ -16,7 +16,7 @@ export function ModuleShell({ title, subtitle, module, controls, children, conte
   return (
     <div className="min-h-full">
       <TopFilterBar title={title} subtitle={subtitle} module={module} controls={controls} />
-      <div className={cn('mx-auto max-w-[1500px] space-y-5 px-6 py-5', contentClassName)}>{children}</div>
+      <div className={cn('mx-auto max-w-[1500px] space-y-5 px-4 py-5 sm:px-6', contentClassName)}>{children}</div>
     </div>
   );
 }
