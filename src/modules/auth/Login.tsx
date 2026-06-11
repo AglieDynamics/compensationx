@@ -15,10 +15,14 @@ export function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
-  function handleSubmit(e: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    const ok = signIn(username, password);
+    if (submitting) return;
+    setSubmitting(true);
+    const ok = await signIn(username, password);
+    setSubmitting(false);
     if (!ok) setError(true);
     // On success the gate unmounts and the protected route renders.
   }
@@ -95,10 +99,13 @@ export function Login() {
 
             <button
               type="submit"
-              className="group flex w-full items-center justify-center gap-2 rounded-lg bg-navy-500 px-4 py-2.5 text-[0.88rem] font-semibold text-white transition-colors hover:bg-blue-400"
+              disabled={submitting}
+              className="group flex w-full items-center justify-center gap-2 rounded-lg bg-navy-500 px-4 py-2.5 text-[0.88rem] font-semibold text-white transition-colors hover:bg-blue-400 disabled:cursor-not-allowed disabled:opacity-70"
             >
-              Enter demo
-              <ArrowRight size={15} className="transition-transform group-hover:translate-x-0.5" />
+              {submitting ? 'Entering…' : 'Enter demo'}
+              {!submitting && (
+                <ArrowRight size={15} className="transition-transform group-hover:translate-x-0.5" />
+              )}
             </button>
           </form>
         </div>
