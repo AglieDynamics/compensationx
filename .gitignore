@@ -21,6 +21,8 @@ data-source/*.xls
 
 # Local sales/marketing collateral — not part of the app
 Presentation1.pdf
+# Source art for the OG share card (processed copy lives in public/og-image.png)
+Socialnew.jpeg
 
 # Vercel
 .vercel
