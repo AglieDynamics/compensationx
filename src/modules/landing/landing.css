@@ -308,7 +308,7 @@
   display: flex;
   gap: 0;
   border-top: 1px solid rgba(255, 255, 255, 0.16);
-  max-width: 760px;
+  max-width: 1040px;
 }
 .cps .hero-meta div {
   flex: 1;

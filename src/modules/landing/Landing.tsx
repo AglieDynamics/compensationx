@@ -155,6 +155,10 @@ export function Landing() {
               <div className="k">Regulatory</div>
               <div className="v">EU Pay Transparency ready</div>
             </div>
+            <div>
+              <div className="k">Designed for</div>
+              <div className="v">The Pay-Productivity Frontier</div>
+            </div>
           </div>
         </div>
       </header>
