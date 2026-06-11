@@ -4,6 +4,7 @@ import { Landing } from './modules/landing/Landing';
 import { RequireAuth } from './modules/auth/RequireAuth';
 import { Cockpit } from './modules/operate/Cockpit';
 import { RouteFallback } from './components/layout/RouteFallback';
+import { RouteError } from './components/layout/RouteError';
 
 // Cockpit is eager (landing route); the rest are code-split.
 const Dashboard = lazy(() => import('./modules/dashboard/Dashboard').then((m) => ({ default: m.Dashboard })));
@@ -39,11 +40,13 @@ function lazyRoute(element: React.ReactNode) {
 export const router = createBrowserRouter(
   [
     // Public marketing landing — renders standalone, outside the app shell.
-    { path: '/', element: <Landing /> },
+    { path: '/', element: <Landing />, errorElement: <RouteError /> },
     {
       // Platform — every authenticated/app surface lives under the side-nav shell,
       // gated behind the demo sign-in (RequireAuth renders AppLayout once unlocked).
       element: <RequireAuth />,
+      // Crash in any child module degrades to a recoverable panel, not a blank screen.
+      errorElement: <RouteError />,
       children: [
         { path: 'app', element: <Cockpit /> },
         { path: 'pricing', element: lazyRoute(<JobPricing />) },
