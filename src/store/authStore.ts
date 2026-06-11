@@ -10,6 +10,7 @@
 
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
+import { track } from '@vercel/analytics';
 
 /** Shared demo credentials. Intentionally trivial — this gates a public demo. */
 const DEMO_USERNAME = 'demo';
@@ -29,7 +30,10 @@ export const useAuthStore = create<AuthState>()(
       signIn: (username, password) => {
         const ok =
           username.trim().toLowerCase() === DEMO_USERNAME && password === DEMO_PASSWORD;
-        if (ok) set({ authenticated: true });
+        if (ok) {
+          set({ authenticated: true });
+          track('demo_signin');
+        }
         return ok;
       },
       signOut: () => set({ authenticated: false }),

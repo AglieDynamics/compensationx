@@ -21,6 +21,7 @@ import {
   X,
   type LucideIcon,
 } from 'lucide-react';
+import { track } from '@vercel/analytics';
 import { useOnboardingStore } from '@/store/onboardingStore';
 import { cn } from '@/lib/cn';
 
@@ -80,10 +81,12 @@ export function WelcomeTour() {
 
   const finish = useCallback(
     (destination?: string) => {
+      // Reaching the final CTA completes the tour; anything else is a skip.
+      track('tour_finished', { outcome: destination ? 'completed' : 'skipped', step: step + 1 });
       complete();
       if (destination) navigate(destination);
     },
-    [complete, navigate],
+    [complete, navigate, step],
   );
 
   // Focus the primary action when the tour opens or the step changes, and keep
