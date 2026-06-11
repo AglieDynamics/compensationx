@@ -1,7 +1,7 @@
 import { lazy, Suspense } from 'react';
 import { createBrowserRouter, Navigate } from 'react-router-dom';
-import { AppLayout } from './App';
 import { Landing } from './modules/landing/Landing';
+import { RequireAuth } from './modules/auth/RequireAuth';
 import { Cockpit } from './modules/operate/Cockpit';
 import { RouteFallback } from './components/layout/RouteFallback';
 
@@ -41,8 +41,9 @@ export const router = createBrowserRouter(
     // Public marketing landing — renders standalone, outside the app shell.
     { path: '/', element: <Landing /> },
     {
-      // Platform — every authenticated/app surface lives under the side-nav shell.
-      element: <AppLayout />,
+      // Platform — every authenticated/app surface lives under the side-nav shell,
+      // gated behind the demo sign-in (RequireAuth renders AppLayout once unlocked).
+      element: <RequireAuth />,
       children: [
         { path: 'app', element: <Cockpit /> },
         { path: 'pricing', element: lazyRoute(<JobPricing />) },

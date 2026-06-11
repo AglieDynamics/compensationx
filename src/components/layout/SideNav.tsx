@@ -1,11 +1,15 @@
-import { Link, NavLink } from 'react-router-dom';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
+import { LogOut } from 'lucide-react';
 import { useAppStore } from '@/store/useAppStore';
+import { useAuthStore } from '@/store/authStore';
 import { cn } from '@/lib/cn';
 import { NAV_ITEMS } from './nav';
 
 export function SideNav() {
   const source = useAppStore((s) => s.source);
   const country = useAppStore((s) => s.dataset.meta.country);
+  const signOut = useAuthStore((s) => s.signOut);
+  const navigate = useNavigate();
 
   return (
     <aside className="flex h-screen w-[232px] shrink-0 flex-col border-r border-border bg-navy-900 text-white">
@@ -53,13 +57,24 @@ export function SideNav() {
         })}
       </nav>
 
-      <div className="border-t border-white/10 px-5 py-3 text-[0.7rem] text-white/55">
+      <div className="space-y-2 border-t border-white/10 px-5 py-3 text-[0.7rem] text-white/55">
         <div className="flex items-center justify-between">
           <span>Active dataset</span>
           <span className={cn('font-semibold', source === 'uploaded' ? 'text-brand-green' : 'text-blue-400')}>
             {source === 'uploaded' ? 'Uploaded' : country}
           </span>
         </div>
+        <button
+          type="button"
+          onClick={() => {
+            signOut();
+            navigate('/');
+          }}
+          className="flex w-full items-center gap-1.5 text-white/45 transition-colors hover:text-white/80"
+        >
+          <LogOut size={13} strokeWidth={2} className="shrink-0" />
+          <span>Sign out of demo</span>
+        </button>
       </div>
     </aside>
   );
