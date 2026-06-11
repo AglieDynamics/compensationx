@@ -1,0 +1,22 @@
+# Crypto Payscale — https://cryptopayscale.io
+User-agent: *
+Allow: /$
+Allow: /og-image.png
+Allow: /logo.png
+
+# The platform is a gated demo (all paths render the same SPA shell);
+# keep it out of search to avoid indexing duplicate app routes.
+Disallow: /app
+Disallow: /pricing
+Disallow: /structure
+Disallow: /employees
+Disallow: /dashboard
+Disallow: /worksheet
+Disallow: /summary
+Disallow: /budget
+Disallow: /career
+Disallow: /data
+Disallow: /pulse
+Disallow: /capital/
+
+Sitemap: https://cryptopayscale.io/sitemap.xml

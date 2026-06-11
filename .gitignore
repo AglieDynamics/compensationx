@@ -19,6 +19,9 @@ pnpm-debug.log*
 data-source/*.xlsx
 data-source/*.xls
 
+# Local sales/marketing collateral — not part of the app
+Presentation1.pdf
+
 # Vercel
 .vercel
 .gstack/
