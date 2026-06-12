@@ -23,7 +23,10 @@ function download(filename: string, content: string) {
   const a = document.createElement('a');
   a.href = url;
   a.download = filename;
+  // Anchor must be in the DOM for the click to register in some browsers (Firefox).
+  document.body.appendChild(a);
   a.click();
+  a.remove();
   URL.revokeObjectURL(url);
 }
 

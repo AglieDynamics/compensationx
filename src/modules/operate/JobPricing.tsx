@@ -53,7 +53,15 @@ const DEFAULT_INPUTS: PricingInputs = {
   useStretch: false,
 };
 
-const STEPS = ['Intake', 'Match', 'Price', 'Equity', 'Offer', 'Save'] as const;
+/** The six on-page sections, in render order, each paired with its anchor id. */
+const STEPS = [
+  { label: 'Intake', id: 'pricing-intake' },
+  { label: 'Match', id: 'pricing-match' },
+  { label: 'Offer', id: 'pricing-offer' },
+  { label: 'Rationale', id: 'pricing-rationale' },
+  { label: 'Equity', id: 'pricing-equity' },
+  { label: 'Save', id: 'pricing-save' },
+] as const;
 
 /** A premium stepper applied on top of the documented snapshot, carrying peer median for session analytics. */
 type SavedCaseInput = Omit<PricingCase, 'id'> & {
@@ -112,6 +120,22 @@ export function JobPricing() {
   const updateInputs = (patch: Partial<PricingInputs>) => {
     setInputs((prev) => ({ ...prev, ...patch }));
     setJustSaved(false);
+  };
+
+  // Stepper navigation: highlight the step AND scroll its section into view,
+  // moving focus to the heading for keyboard/screen-reader users.
+  const goToStep = (i: number) => {
+    setActiveStep(i);
+    const step = STEPS[i];
+    if (!step) return;
+    const el = document.getElementById(step.id);
+    if (!el) return;
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    const heading = el.querySelector('h2');
+    if (heading instanceof HTMLElement) {
+      heading.setAttribute('tabindex', '-1');
+      heading.focus({ preventScroll: true });
+    }
   };
 
   const onSave = () => {
@@ -204,10 +228,10 @@ export function JobPricing() {
   return (
     <ModuleShell
       title="Job Pricing"
-      subtitle="Turn a hiring request into a governed, explainable offer — Intake → Match → Price → Equity → Offer → Save."
+      subtitle="Turn a hiring request into a governed, explainable offer — Intake → Match → Offer → Rationale → Equity → Save."
       controls={controls}
     >
-      <Stepper steps={STEPS} active={activeStep} onSelect={setActiveStep} />
+      <Stepper steps={STEPS} active={activeStep} onSelect={goToStep} />
 
       <KpiStrip items={kpis} className="xl:grid-cols-5" />
 
@@ -219,6 +243,8 @@ export function JobPricing() {
       )}
 
       <Card
+        id="pricing-intake"
+        className="scroll-mt-28"
         title="1 · Hiring request intake"
         subtitle="Define the role. The level sets the grade band; family and geography drive the survey match."
       >
@@ -227,6 +253,8 @@ export function JobPricing() {
 
       <div className="grid grid-cols-1 gap-5 xl:grid-cols-[1fr_1.4fr]">
         <Card
+          id="pricing-match"
+          className="scroll-mt-28"
           title="2 · Benchmark match"
           subtitle="Matched survey reference at the posture percentile, with the manual adjustment premium."
           right={posturePctile.ref ? <ProvenanceChip provenance={posturePctile.ref.provenance} /> : undefined}
@@ -264,6 +292,8 @@ export function JobPricing() {
         </Card>
 
         <Card
+          id="pricing-offer"
+          className="scroll-mt-28"
           title="3 · Offer card"
           subtitle="Floor / Target / Stretch over the grade range, with market and peer markers."
           right={
@@ -287,6 +317,8 @@ export function JobPricing() {
       </div>
 
       <Card
+        id="pricing-rationale"
+        className="scroll-mt-28"
         title="4 · Rationale"
         subtitle="Every adjustment from market reference to the final offer target — never an unqualified single number."
         right={<ProvenanceChip provenance={result.provenance} />}
@@ -300,6 +332,8 @@ export function JobPricing() {
 
       <div className="grid grid-cols-1 gap-5 xl:grid-cols-[1fr_1fr]">
         <Card
+          id="pricing-equity"
+          className="scroll-mt-28"
           title="5 · Equity guardrails"
           subtitle="Internal-equity flags raised against the peer cohort for this exact role."
         >
@@ -351,6 +385,8 @@ export function JobPricing() {
       </div>
 
       <Card
+        id="pricing-save"
+        className="scroll-mt-28"
         title="6 · Save case"
         subtitle="Capture this priced offer as a session case to compare and track outcomes."
         right={
@@ -395,7 +431,7 @@ function Stepper({
   active,
   onSelect,
 }: {
-  steps: readonly string[];
+  steps: readonly { label: string; id: string }[];
   active: number;
   onSelect: (i: number) => void;
 }) {
@@ -403,7 +439,7 @@ function Stepper({
     <nav aria-label="Pricing steps" className="flex flex-wrap items-center gap-1.5">
       {steps.map((s, i) => (
         <button
-          key={s}
+          key={s.id}
           type="button"
           onClick={() => onSelect(i)}
           aria-current={i === active ? 'step' : undefined}
@@ -414,7 +450,7 @@ function Stepper({
           }
         >
           <span className={`tabular-nums ${i === active ? 'text-white/80' : 'text-muted'}`}>{i + 1}</span>
-          {s}
+          {s.label}
         </button>
       ))}
     </nav>

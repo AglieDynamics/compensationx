@@ -121,6 +121,7 @@ const ORDINAL_SUFFIX = (n: number): string => {
 
 /** Percentile (0.05) -> "5th". */
 export function formatPercentileLabel(p: number): string {
+  if (!Number.isFinite(p)) return NA;
   const n = Math.round(p * 100);
   return `${n}${ORDINAL_SUFFIX(n)}`;
 }

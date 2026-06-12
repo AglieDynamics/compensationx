@@ -2,6 +2,8 @@ import type { ReactNode } from 'react';
 import { cn } from '@/lib/cn';
 
 interface CardProps {
+  /** Anchor id, e.g. so a stepper can scroll the card into view. */
+  id?: string;
   title?: ReactNode;
   subtitle?: ReactNode;
   right?: ReactNode;
@@ -12,10 +14,11 @@ interface CardProps {
   flush?: boolean;
 }
 
-export function Card({ title, subtitle, right, children, className, bodyClassName, flush }: CardProps) {
+export function Card({ id, title, subtitle, right, children, className, bodyClassName, flush }: CardProps) {
   const hasHeader = title != null || subtitle != null || right != null;
   return (
     <section
+      id={id}
       className={cn(
         'rounded-card border border-border bg-card shadow-card',
         'animate-fade-in',

@@ -64,11 +64,16 @@ export const useStructureStore = create<StructureState>()(
 
       deleteStructure: (id) =>
         set((s) => {
-          const structures = s.structures.filter((st) => st.id !== id);
-          return {
-            structures: structures.length ? structures : [defaultStructureDesign()],
-            activeId: s.activeId === id ? (structures[0]?.id ?? 'default') : s.activeId,
-          };
+          const remaining = s.structures.filter((st) => st.id !== id);
+          const structures = remaining.length ? remaining : [defaultStructureDesign()];
+          const activeId = s.activeId === id ? (structures[0]?.id ?? 'default') : s.activeId;
+          // Never leave zero published structures: if the deleted one was the
+          // published reference (used by Pricing & the Cockpit), promote the
+          // surviving active structure so those modules keep an anchor.
+          const withPublished = structures.some((st) => st.published)
+            ? structures
+            : structures.map((st) => ({ ...st, published: st.id === activeId }));
+          return { structures: withPublished, activeId };
         }),
 
       setActive: (activeId) => set({ activeId }),

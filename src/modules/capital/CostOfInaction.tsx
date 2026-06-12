@@ -45,7 +45,10 @@ export function CostOfInaction() {
     () => [...under].sort((a, b) => (b.totalLeakage ?? 0) - (a.totalLeakage ?? 0))[0]?.level ?? '',
     [under],
   );
-  const selectedLevel = sel || defaultSel;
+  // Clamp to a currently-under-market option: a percentile/scenario change can
+  // drop the previously-picked level out of the (under-market-only) options,
+  // which would otherwise leave the selector pointing at a stale/blank value.
+  const selectedLevel = under.some((s) => s.level === sel) ? sel : defaultSel;
   const selected = res.segments.find((s) => s.level === selectedLevel) ?? null;
 
   const steps: WaterfallStep[] = selected
