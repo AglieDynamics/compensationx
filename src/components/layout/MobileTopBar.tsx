@@ -19,11 +19,11 @@ export function MobileTopBar({ onMenu }: { onMenu: () => void }) {
       </button>
       <Link to="/app" className="flex items-center gap-2">
         <img
-          src="/logo.png"
+          src="/landing/logo.png"
           alt="Crypto Payscale"
-          width={26}
+          width={21}
           height={26}
-          className="h-[26px] w-[26px] rounded-md"
+          className="h-[26px] w-auto object-contain"
         />
         <span className="text-[0.92rem] font-semibold tracking-tight">Crypto Payscale</span>
       </Link>

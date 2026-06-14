@@ -32,11 +32,11 @@ export function Login() {
       <div className="w-full max-w-sm">
         <Link to="/" className="mb-8 flex items-center gap-2.5">
           <img
-            src="/logo.png"
+            src="/landing/logo.png"
             alt="Crypto Payscale"
-            width={36}
+            width={30}
             height={36}
-            className="h-9 w-9 rounded-lg"
+            className="h-9 w-auto object-contain"
           />
           <div className="leading-tight">
             <div className="text-[1rem] font-semibold tracking-tight">Crypto Payscale</div>

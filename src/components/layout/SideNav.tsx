@@ -41,11 +41,11 @@ export function SideNav({ open, onClose }: SideNavProps) {
         <div className="flex items-center justify-between px-5 py-5">
           <Link to="/app" className="flex items-center gap-2.5" onClick={onClose}>
             <img
-              src="/logo.png"
+              src="/landing/logo.png"
               alt="Crypto Payscale"
-              width={32}
+              width={26}
               height={32}
-              className="h-8 w-8 shrink-0 rounded-lg"
+              className="h-8 w-auto shrink-0 object-contain"
             />
             <div className="leading-tight">
               <div className="text-[0.95rem] font-semibold tracking-tight">Crypto Payscale</div>
