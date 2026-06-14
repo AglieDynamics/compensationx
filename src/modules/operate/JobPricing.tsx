@@ -10,12 +10,18 @@
  */
 
 import { useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Check, Save } from 'lucide-react';
 import { ModuleShell } from '@/components/layout/ModuleShell';
 import { Card } from '@/components/ui/Card';
 import { KpiStrip, type KpiItem } from '@/components/ui/Kpi';
 import { Badge } from '@/components/ui/Badge';
 import { Segmented } from '@/components/ui/Segmented';
+import { Select } from '@/components/ui/Select';
+import { OverallQualityBadge } from '@/components/equity/FairScorecard';
+import { humanizeEnum } from '@/components/equity/equityLabels';
+import { scorePlan } from '@/lib/equityScoring';
+import { useEquityPlanStore } from '@/store/equityPlanStore';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { ProvenanceChip } from '@/components/ui/ProvenanceChip';
 import { Waterfall, type WaterfallStep } from '@/components/charts/Waterfall';
@@ -54,6 +60,9 @@ const DEFAULT_INPUTS: PricingInputs = {
 };
 
 /** The six on-page sections, in render order, each paired with its anchor id. */
+/** Sentinel for the "no plan attached" option (Radix Select forbids an empty value). */
+const NO_PLAN = '__none__';
+
 const STEPS = [
   { label: 'Intake', id: 'pricing-intake' },
   { label: 'Match', id: 'pricing-match' },
@@ -86,6 +95,11 @@ export function JobPricing() {
   const [inputs, setInputs] = useState<PricingInputs>(DEFAULT_INPUTS);
   const [activeStep, setActiveStep] = useState(0);
   const [justSaved, setJustSaved] = useState(false);
+  // Optional incentive / synthetic-equity plan attached at the equity step.
+  const [equityPlanId, setEquityPlanId] = useState<string>('');
+  const equityPlans = useEquityPlanStore((s) => s.plans);
+  const attachedPlan = equityPlans.find((p) => p.id === equityPlanId);
+  const attachedScore = attachedPlan ? scorePlan(attachedPlan) : null;
 
   const result = useMemo<PricingResult>(
     () => priceRole(intake, inputs, ctx.surveyDataset, ctx.assumptions, ctx.employees, ctx.publishedStructure),
@@ -156,6 +170,7 @@ export function JobPricing() {
         peerMedian: result.peers.median,
       },
       outcome: 'pending',
+      ...(equityPlanId ? { equityPlanId } : {}),
     };
     saveCase(draft);
     setJustSaved(true);
@@ -355,6 +370,27 @@ export function JobPricing() {
               ))}
             </ul>
           )}
+
+          <div className="mt-4 border-t border-border pt-3">
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-[0.72rem] font-semibold uppercase tracking-wide text-muted">Incentive / synthetic-equity plan</span>
+              <Link to="/incentives/library" className="text-[0.74rem] font-medium text-navy-700 hover:underline">Manage plans →</Link>
+            </div>
+            <div className="mt-2 flex flex-wrap items-center gap-2">
+              <Select<string>
+                ariaLabel="Attach incentive plan"
+                value={equityPlanId || NO_PLAN}
+                onChange={(v) => { setEquityPlanId(v === NO_PLAN ? '' : v); setJustSaved(false); }}
+                options={[{ value: NO_PLAN, label: 'No plan attached' }, ...equityPlans.map((p) => ({ value: p.id, label: p.name }))]}
+              />
+              {attachedScore && <OverallQualityBadge band={attachedScore.overall.band} score={attachedScore.overall.score} />}
+            </div>
+            <p className="mt-1.5 text-[0.72rem] text-muted">
+              {attachedPlan
+                ? `${humanizeEnum(attachedPlan.archetype.planType)} — saved with this case.`
+                : 'Attach a long-term incentive plan to carry its design into this offer’s saved case.'}
+            </p>
+          </div>
         </Card>
 
         <Card

@@ -9,6 +9,7 @@ import { useScenarioStore } from '@/store/scenarioStore';
 import { useEmployeeStore } from '@/store/employeeStore';
 import { useStructureStore } from '@/store/structureStore';
 import { usePricingStore } from '@/store/pricingStore';
+import { useEquityPlanStore } from '@/store/equityPlanStore';
 
 /**
  * Root layout: side nav + scrolling content area. The nav is a static rail on
@@ -26,6 +27,7 @@ export function AppLayout() {
     void useEmployeeStore.persist.rehydrate();
     void useStructureStore.persist.rehydrate();
     void usePricingStore.persist.rehydrate();
+    void useEquityPlanStore.persist.rehydrate();
   }, []);
 
   // Close the mobile drawer whenever the route changes.

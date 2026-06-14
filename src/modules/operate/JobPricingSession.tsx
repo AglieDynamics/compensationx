@@ -10,6 +10,7 @@
  * Labelled "session analytics — no ATS integration".
  */
 
+import { useMemo } from 'react';
 import { Trash2 } from 'lucide-react';
 import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
@@ -19,6 +20,7 @@ import { Table, TableScroll, TBody, TD, TH, THead, TR } from '@/components/ui/Ta
 import type { PricingCase } from '@/domain/structure';
 import { LEVEL_LABELS } from '@/domain/levels';
 import { formatCompaRatio, formatGndK, formatPct, NA } from '@/lib/format';
+import { useEquityPlanStore } from '@/store/equityPlanStore';
 
 const isNum = (v: number | null | undefined): v is number => typeof v === 'number' && Number.isFinite(v);
 
@@ -102,6 +104,8 @@ interface SessionProps {
 
 export function JobPricingSession({ cases, onDelete, onRecordOutcome }: SessionProps) {
   const m = sessionMetrics(cases);
+  const plans = useEquityPlanStore((s) => s.plans);
+  const planNameById = useMemo(() => new Map(plans.map((p) => [p.id, p.name])), [plans]);
 
   return (
     <div className="grid grid-cols-1 gap-5 xl:grid-cols-[1.6fr_1fr]">
@@ -138,7 +142,14 @@ export function JobPricingSession({ cases, onDelete, onRecordOutcome }: SessionP
               <TBody>
                 {cases.map((c) => (
                   <TR key={c.id}>
-                    <TD className="max-w-[14rem] truncate font-medium text-ink" title={c.label}>{c.label}</TD>
+                    <TD className="max-w-[14rem] font-medium text-ink">
+                      <div className="truncate" title={c.label}>{c.label}</div>
+                      {c.equityPlanId && planNameById.has(c.equityPlanId) && (
+                        <div className="mt-0.5 truncate text-[0.68rem] font-normal text-muted" title={planNameById.get(c.equityPlanId)}>
+                          Plan: {planNameById.get(c.equityPlanId)}
+                        </div>
+                      )}
+                    </TD>
                     <TD className="text-ink-soft">{LEVEL_LABELS[c.intake.level]}</TD>
                     <TD align="right" className="border-l border-border/60 tabular-nums text-ink-soft">{formatGndK(c.snapshot.floor, 1)}</TD>
                     <TD align="right" className="tabular-nums font-semibold text-navy-700">{formatGndK(c.snapshot.target, 1)}</TD>

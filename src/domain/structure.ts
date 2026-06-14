@@ -66,4 +66,9 @@ export interface PricingCase {
   inputs: PricingInputs;
   snapshot: PricingCaseSnapshot;
   outcome: 'pending' | 'accepted' | 'declined';
+  /**
+   * Optional link to an incentive / synthetic-equity plan attached at the equity
+   * step. Additive — older cases simply omit it.
+   */
+  equityPlanId?: string;
 }

@@ -33,6 +33,12 @@ const JobPricing = lazy(() => import('./modules/operate/JobPricing').then((m) =>
 const RangesDesigner = lazy(() => import('./modules/operate/RangesDesigner').then((m) => ({ default: m.RangesDesigner })));
 const EmployeesManager = lazy(() => import('./modules/operate/EmployeesManager').then((m) => ({ default: m.EmployeesManager })));
 
+// --- Incentive Design (Synthetic Equity module) ---
+const PlanLibrary = lazy(() => import('./modules/equity/PlanLibrary').then((m) => ({ default: m.PlanLibrary })));
+const PlanDesigner = lazy(() => import('./modules/equity/PlanDesigner').then((m) => ({ default: m.PlanDesigner })));
+const PlanComparison = lazy(() => import('./modules/equity/PlanComparison').then((m) => ({ default: m.PlanComparison })));
+const EquityBrief = lazy(() => import('./modules/equity/EquityBrief').then((m) => ({ default: m.EquityBrief })));
+
 function lazyRoute(element: React.ReactNode) {
   return <Suspense fallback={<RouteFallback />}>{element}</Suspense>;
 }
@@ -66,6 +72,10 @@ export const router = createBrowserRouter(
         { path: 'capital/cost-of-inaction', element: lazyRoute(<CostOfInaction />) },
         { path: 'capital/total-cost', element: lazyRoute(<TotalCost />) },
         { path: 'capital/brief', element: lazyRoute(<CapitalBrief />) },
+        { path: 'incentives/library', element: lazyRoute(<PlanLibrary />) },
+        { path: 'incentives/designer', element: lazyRoute(<PlanDesigner />) },
+        { path: 'incentives/compare', element: lazyRoute(<PlanComparison />) },
+        { path: 'incentives/brief', element: lazyRoute(<EquityBrief />) },
         { path: '*', element: <Navigate to="/" replace /> },
       ],
     },

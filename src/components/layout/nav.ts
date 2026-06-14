@@ -4,13 +4,17 @@ import {
   ClipboardList,
   Coins,
   Database,
+  FileText,
   Gauge,
+  GitCompare,
   GraduationCap,
   Hourglass,
+  Layers,
   LayoutDashboard,
   LayoutGrid,
   LineChart,
   type LucideIcon,
+  PencilRuler,
   Ruler,
   SlidersHorizontal,
   Table2,
@@ -20,7 +24,7 @@ import {
   Waypoints,
 } from 'lucide-react';
 
-export type NavGroup = 'Overview' | 'Operate' | 'Benchmarking' | 'Capital Allocation';
+export type NavGroup = 'Overview' | 'Operate' | 'Benchmarking' | 'Capital Allocation' | 'Incentive Design';
 
 export interface NavItem {
   path: string;
@@ -56,4 +60,10 @@ export const NAV_ITEMS: NavItem[] = [
   { path: '/capital/cost-of-inaction', label: 'Cost of Inaction', short: 'Cost of Inaction', icon: Hourglass, group: 'Capital Allocation' },
   { path: '/capital/total-cost', label: 'Total Workforce Cost', short: 'Total Cost', icon: Coins, group: 'Capital Allocation' },
   { path: '/capital/brief', label: 'Capital Allocation Brief', short: 'Brief', icon: ClipboardList, group: 'Capital Allocation' },
+
+  // --- Incentive Design (Synthetic Equity module) ---
+  { path: '/incentives/library', label: 'Plan Library', short: 'Plans', icon: Layers, group: 'Incentive Design' },
+  { path: '/incentives/designer', label: 'Plan Designer', short: 'Designer', icon: PencilRuler, group: 'Incentive Design' },
+  { path: '/incentives/compare', label: 'Plan Comparison', short: 'Compare', icon: GitCompare, group: 'Incentive Design' },
+  { path: '/incentives/brief', label: 'Incentive Plan Brief', short: 'Brief', icon: FileText, group: 'Incentive Design' },
 ];
