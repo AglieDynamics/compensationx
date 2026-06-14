@@ -4,6 +4,7 @@ import { useAppStore } from '@/store/useAppStore';
 import { useAuthStore } from '@/store/authStore';
 import { useOnboardingStore } from '@/store/onboardingStore';
 import { cn } from '@/lib/cn';
+import { BrandLockup } from './BrandLockup';
 import { NAV_ITEMS } from './nav';
 
 interface SideNavProps {
@@ -39,18 +40,8 @@ export function SideNav({ open, onClose }: SideNavProps) {
         )}
       >
         <div className="flex items-center justify-between px-5 py-5">
-          <Link to="/app" className="flex items-center gap-2.5" onClick={onClose}>
-            <img
-              src="/landing/logo.png"
-              alt="Crypto Payscale"
-              width={26}
-              height={32}
-              className="h-8 w-auto shrink-0 object-contain"
-            />
-            <div className="leading-tight">
-              <div className="text-[0.95rem] font-semibold tracking-tight">Crypto Payscale</div>
-              <div className="text-[0.68rem] text-white/55">Workforce capital allocation</div>
-            </div>
+          <Link to="/app" className="inline-flex" onClick={onClose}>
+            <BrandLockup />
           </Link>
           <button
             type="button"

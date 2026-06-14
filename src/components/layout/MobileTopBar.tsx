@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Menu } from 'lucide-react';
+import { BrandLockup } from './BrandLockup';
 
 /**
  * Mobile-only header. Sits above the scrolling content as a flex sibling (not
@@ -17,15 +18,8 @@ export function MobileTopBar({ onMenu }: { onMenu: () => void }) {
       >
         <Menu size={20} strokeWidth={2} />
       </button>
-      <Link to="/app" className="flex items-center gap-2">
-        <img
-          src="/landing/logo.png"
-          alt="Crypto Payscale"
-          width={21}
-          height={26}
-          className="h-[26px] w-auto object-contain"
-        />
-        <span className="text-[0.92rem] font-semibold tracking-tight">Crypto Payscale</span>
+      <Link to="/app" className="inline-flex">
+        <BrandLockup logoHeight={26} fontSize={15} />
       </Link>
     </header>
   );

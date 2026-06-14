@@ -8,6 +8,7 @@
 import { useState, type FormEvent } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Lock } from 'lucide-react';
+import { BrandLockup } from '@/components/layout/BrandLockup';
 import { useAuthStore } from '@/store/authStore';
 
 export function Login() {
@@ -30,18 +31,8 @@ export function Login() {
   return (
     <div className="flex min-h-screen w-full items-center justify-center bg-navy-900 px-6 py-12 text-white">
       <div className="w-full max-w-sm">
-        <Link to="/" className="mb-8 flex items-center gap-2.5">
-          <img
-            src="/landing/logo.png"
-            alt="Crypto Payscale"
-            width={30}
-            height={36}
-            className="h-9 w-auto object-contain"
-          />
-          <div className="leading-tight">
-            <div className="text-[1rem] font-semibold tracking-tight">Crypto Payscale</div>
-            <div className="text-[0.7rem] text-white/55">Workforce capital allocation</div>
-          </div>
+        <Link to="/" className="mb-8 inline-flex">
+          <BrandLockup />
         </Link>
 
         <div className="rounded-card border border-white/10 bg-white/[0.03] p-7 shadow-pop">
