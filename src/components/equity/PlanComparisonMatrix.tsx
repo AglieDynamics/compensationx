@@ -31,8 +31,10 @@ export function PlanComparisonMatrix({ plans }: { plans: EquityPlanDefinition[] 
   return (
     <div className="space-y-5">
       <div className="grid grid-cols-1 gap-5 xl:grid-cols-[1.4fr_1fr]">
-        {/* Heatmap */}
-        <div className="overflow-x-auto">
+        {/* Heatmap — min-w-0 lets the grid/flex track shrink below the table's
+            intrinsic width so the scroll is contained here instead of pushing
+            the whole page wider on narrow screens. */}
+        <div className="min-w-0 overflow-x-auto">
           <table className="w-full border-separate border-spacing-0 text-[0.78rem]">
             <thead>
               <tr>
