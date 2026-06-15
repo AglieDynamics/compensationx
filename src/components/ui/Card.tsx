@@ -26,7 +26,7 @@ export function Card({ id, title, subtitle, right, children, className, bodyClas
       )}
     >
       {hasHeader && (
-        <header className="flex items-start justify-between gap-4 border-b border-border px-5 py-3.5">
+        <header className="flex flex-wrap items-start justify-between gap-x-4 gap-y-2 border-b border-border px-5 py-3.5">
           <div className="min-w-0">
             {title != null && (
               <h2 className="text-[0.95rem] font-semibold leading-tight text-ink">{title}</h2>
@@ -35,7 +35,7 @@ export function Card({ id, title, subtitle, right, children, className, bodyClas
               <p className="mt-0.5 text-[0.8rem] leading-snug text-muted">{subtitle}</p>
             )}
           </div>
-          {right != null && <div className="flex shrink-0 items-center gap-2">{right}</div>}
+          {right != null && <div className="flex min-w-0 flex-wrap items-center gap-2">{right}</div>}
         </header>
       )}
       <div className={cn(flush ? '' : 'px-5 py-4', bodyClassName)}>{children}</div>
