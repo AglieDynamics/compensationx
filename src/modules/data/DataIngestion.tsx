@@ -13,6 +13,7 @@ import { parseWorkbookData, type ParseReport } from '@/lib/parseWorkbook';
 import { useAppStore } from '@/store/useAppStore';
 import { cn } from '@/lib/cn';
 import { describeCombo, EXPECTED_TABS, friendlyParseError } from './ingestionLabels';
+import { MacroContext } from './MacroContext';
 
 type Status =
   | { kind: 'idle' }
@@ -252,6 +253,8 @@ export function DataIngestion() {
           />
         )}
       </Card>
+
+      <MacroContext />
     </ModuleShell>
   );
 }
