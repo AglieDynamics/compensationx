@@ -1,11 +1,12 @@
 /**
- * Macroeconomic context viewer (spike) — additive section on /data.
+ * Macroeconomic context viewer — additive section on /data.
  *
- * Pulls ONE World Bank WDI series at a time directly from DBnomics (Class A, no
- * key, CORS-friendly), renders it with a recharts line + KPIs + a provenance
- * footer, and degrades gracefully (loading / error / offline-fallback). No store
- * yet and no proxy — those are later slices. All fetch/normalize logic lives in
- * @/lib/macro; this component only renders.
+ * Pulls ONE reference series at a time and renders it with a recharts line +
+ * KPIs + provenance footer, degrading gracefully (loading / error / offline).
+ * Two sources:
+ *   - DBnomics (Class A): direct browser fetch, World Bank WDI, any country.
+ *   - FRED (Class B): via our `/api/macro` proxy (key server-side), US series.
+ * All fetch/normalize logic lives in @/lib/macro; this component only renders.
  */
 
 import { useCallback, useRef, useState } from 'react';
@@ -18,17 +19,19 @@ import { Select } from '@/components/ui/Select';
 import { Segmented } from '@/components/ui/Segmented';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { CHART } from '@/components/charts/chartTheme';
-import {
-  fetchDbnomicsSeries,
-  INDICATOR_PRESETS,
-  type IndicatorPreset,
-  MACRO_COUNTRIES,
-} from '@/lib/macro/dbnomics';
-import { clipToRecent, latestObservation, MacroFetchError, type TimeSeries, valueCount } from '@/lib/macro/timeSeries';
+import { fetchDbnomicsSeries, INDICATOR_PRESETS, MACRO_COUNTRIES } from '@/lib/macro/dbnomics';
+import { FRED_PRESETS, fredPreset } from '@/lib/macro/fred';
+import { fetchFredSeries } from '@/lib/macro/proxyClient';
+import { clipToRecent, latestObservation, MacroFetchError, type MacroSourceId, type TimeSeries, valueCount } from '@/lib/macro/timeSeries';
 import { FALLBACK_SERIES } from '@/lib/macro/fallback';
 import { cn } from '@/lib/cn';
 
 type Status = { kind: 'idle' } | { kind: 'loading' } | { kind: 'error'; message: string };
+
+const SOURCES: { value: MacroSourceId; label: string }[] = [
+  { value: 'dbnomics', label: 'DBnomics (World Bank)' },
+  { value: 'fred', label: 'FRED (US, via proxy)' },
+];
 
 const RANGES = [
   { value: '10', label: '10y' },
@@ -47,41 +50,53 @@ function countryName(iso3: string): string {
 }
 
 export function MacroContext() {
-  const [indicatorCode, setIndicatorCode] = useState<string>(INDICATOR_PRESETS[0]!.indicatorCode);
+  const [source, setSource] = useState<MacroSourceId>('dbnomics');
+  const [dbnIndicatorCode, setDbnIndicatorCode] = useState<string>(INDICATOR_PRESETS[0]!.indicatorCode);
+  const [fredSeriesId, setFredSeriesId] = useState<string>(FRED_PRESETS[0]!.seriesId);
   const [iso3, setIso3] = useState<string>('USA');
   const [range, setRange] = useState<string>('20');
   const [series, setSeries] = useState<TimeSeries | null>(null);
   const [status, setStatus] = useState<Status>({ kind: 'idle' });
   const abortRef = useRef<AbortController | null>(null);
 
-  const indicator = INDICATOR_PRESETS.find((i) => i.indicatorCode === indicatorCode) ?? INDICATOR_PRESETS[0]!;
+  const dbnIndicator = INDICATOR_PRESETS.find((i) => i.indicatorCode === dbnIndicatorCode) ?? INDICATOR_PRESETS[0]!;
+  const fredP = fredPreset(fredSeriesId) ?? FRED_PRESETS[0]!;
+  const activeLabel = source === 'dbnomics' ? dbnIndicator.label : fredP.label;
 
-  const pull = useCallback(
-    async (preset: IndicatorPreset, country: string) => {
-      abortRef.current?.abort();
-      const ctrl = new AbortController();
-      abortRef.current = ctrl;
-      setStatus({ kind: 'loading' });
-      try {
-        const ts = await fetchDbnomicsSeries(preset, country, { signal: ctrl.signal });
-        if (ctrl.signal.aborted) return;
-        setSeries(ts);
-        setStatus({ kind: 'idle' });
-      } catch (err) {
-        if (err instanceof DOMException && err.name === 'AbortError') return;
-        const message =
-          err instanceof MacroFetchError && err.kind === 'network'
-            ? 'Could not reach DBnomics — you may be offline or the request was blocked.'
-            : err instanceof Error
-              ? err.message
-              : 'Unexpected error pulling the series.';
-        setStatus({ kind: 'error', message });
-      }
-    },
-    [],
-  );
+  const pull = useCallback(async () => {
+    abortRef.current?.abort();
+    const ctrl = new AbortController();
+    abortRef.current = ctrl;
+    setStatus({ kind: 'loading' });
+    try {
+      // Range is applied client-side (clipToRecent), so both sources fetch full
+      // annual history and changing the range never needs a refetch.
+      const ts: TimeSeries =
+        source === 'dbnomics'
+          ? await fetchDbnomicsSeries(dbnIndicator, iso3, { signal: ctrl.signal })
+          : await fetchFredSeries(fredP, { signal: ctrl.signal });
+      if (ctrl.signal.aborted) return;
+      setSeries(ts);
+      setStatus({ kind: 'idle' });
+    } catch (err) {
+      if (err instanceof DOMException && err.name === 'AbortError') return;
+      const message =
+        err instanceof MacroFetchError && err.kind === 'network'
+          ? err.message
+          : err instanceof Error
+            ? err.message
+            : 'Unexpected error pulling the series.';
+      setStatus({ kind: 'error', message });
+    }
+  }, [source, dbnIndicator, iso3, fredP]);
 
-  const onFetch = () => void pull(indicator, iso3);
+  const changeSource = (s: MacroSourceId) => {
+    abortRef.current?.abort(); // cancel any in-flight pull so it can't render under the new source
+    setSource(s);
+    setSeries(null);
+    setStatus({ kind: 'idle' });
+  };
+
   const showFallback = () => {
     setSeries(FALLBACK_SERIES);
     setStatus({ kind: 'idle' });
@@ -93,41 +108,63 @@ export function MacroContext() {
   return (
     <Card
       title="03 · Macroeconomic context"
-      subtitle="Pull a real reference series (inflation, output, labor) from DBnomics → World Bank WDI."
+      subtitle="Pull a real reference series (inflation, output, labor) from DBnomics or FRED."
       right={
         series ? (
           <Badge variant={series.fallback ? 'amber' : series.cached ? 'neutral' : 'green'}>
             {series.fallback ? 'Fallback' : series.cached ? 'Cached' : 'Live'}
           </Badge>
         ) : (
-          <Badge variant="outline">DBnomics</Badge>
+          <Badge variant="outline">{source === 'fred' ? 'FRED · proxy' : 'DBnomics'}</Badge>
         )
       }
     >
       {/* Controls */}
       <div className="flex flex-wrap items-end gap-3">
+        <Labelled label="Source">
+          <Select<MacroSourceId> ariaLabel="Source" value={source} onChange={changeSource} options={SOURCES} />
+        </Labelled>
+
         <Labelled label="Indicator">
-          <Select
-            ariaLabel="Indicator"
-            value={indicatorCode}
-            onChange={setIndicatorCode}
-            options={INDICATOR_PRESETS.map((i) => ({ value: i.indicatorCode, label: i.label }))}
-          />
+          {source === 'dbnomics' ? (
+            <Select
+              ariaLabel="Indicator"
+              value={dbnIndicatorCode}
+              onChange={setDbnIndicatorCode}
+              options={INDICATOR_PRESETS.map((i) => ({ value: i.indicatorCode, label: i.label }))}
+            />
+          ) : (
+            <Select
+              ariaLabel="Indicator"
+              value={fredSeriesId}
+              onChange={setFredSeriesId}
+              options={FRED_PRESETS.map((p) => ({ value: p.seriesId, label: p.label }))}
+            />
+          )}
         </Labelled>
+
         <Labelled label="Country">
-          <Select
-            ariaLabel="Country"
-            value={iso3}
-            onChange={setIso3}
-            options={MACRO_COUNTRIES.map((c) => ({ value: c.iso3, label: c.name }))}
-          />
+          {source === 'dbnomics' ? (
+            <Select
+              ariaLabel="Country"
+              value={iso3}
+              onChange={setIso3}
+              options={MACRO_COUNTRIES.map((c) => ({ value: c.iso3, label: c.name }))}
+            />
+          ) : (
+            <span className="inline-flex h-8 items-center rounded-lg border border-border bg-bg px-3 text-[0.82rem] text-muted">
+              United States
+            </span>
+          )}
         </Labelled>
+
         <Labelled label="Range">
           <Segmented<string> ariaLabel="Range" value={range} onChange={setRange} options={RANGES.map((r) => ({ ...r }))} />
         </Labelled>
+
         <button
           type="button"
-          onClick={onFetch}
+          onClick={() => void pull()}
           disabled={status.kind === 'loading'}
           className="inline-flex h-8 items-center gap-1.5 rounded-lg bg-navy-700 px-3 text-[0.8rem] font-semibold text-white hover:bg-navy-900 disabled:cursor-not-allowed disabled:opacity-50"
         >
@@ -138,7 +175,7 @@ export function MacroContext() {
       {/* Body states */}
       <div className="mt-5">
         {status.kind === 'loading' && (
-          <div className="flex h-48 items-center justify-center text-[0.85rem] text-muted">Fetching {indicator.label}…</div>
+          <div className="flex h-48 items-center justify-center text-[0.85rem] text-muted">Fetching {activeLabel}…</div>
         )}
 
         {status.kind === 'error' && (
@@ -149,7 +186,7 @@ export function MacroContext() {
                 <p className="font-medium text-brand-red">Couldn’t load the series</p>
                 <p className="mt-0.5 text-muted">{status.message}</p>
                 <div className="mt-2.5 flex items-center gap-2">
-                  <button type="button" onClick={onFetch} className="rounded-md border border-border bg-card px-2.5 py-1 text-[0.78rem] font-medium text-ink-soft hover:border-navy-500/40 hover:text-navy-700">
+                  <button type="button" onClick={() => void pull()} className="rounded-md border border-border bg-card px-2.5 py-1 text-[0.78rem] font-medium text-ink-soft hover:border-navy-500/40 hover:text-navy-700">
                     Retry
                   </button>
                   <button type="button" onClick={showFallback} className="rounded-md border border-border bg-card px-2.5 py-1 text-[0.78rem] font-medium text-ink-soft hover:border-navy-500/40 hover:text-navy-700">
@@ -165,13 +202,11 @@ export function MacroContext() {
           <EmptyState
             icon={<Database size={22} />}
             title="No series loaded"
-            message="Choose an indicator and country, then Fetch series to pull live data from DBnomics."
+            message="Choose a source, indicator and country, then Fetch series to pull live data."
           />
         )}
 
-        {status.kind === 'idle' && view && (
-          <SeriesView ts={view} latest={latest} />
-        )}
+        {status.kind === 'idle' && view && <SeriesView ts={view} latest={latest} />}
       </div>
     </Card>
   );
@@ -190,7 +225,7 @@ function SeriesView({ ts, latest }: { ts: TimeSeries; latest: ReturnType<typeof 
       accent: 'navy',
     },
     { label: 'Coverage', value: `${count}`, sub: `points · ${first}–${last}`, accent: 'default' },
-    { label: 'Frequency', value: ts.frequency, sub: ts.providerCode + ' ' + ts.datasetCode, accent: 'default' },
+    { label: 'Frequency', value: ts.frequency, sub: `${ts.providerCode} ${ts.datasetCode}`, accent: 'default' },
   ];
 
   const chartData = ts.observations.map((o) => ({ period: o.period, value: o.value }));
@@ -243,7 +278,7 @@ function SeriesView({ ts, latest }: { ts: TimeSeries; latest: ReturnType<typeof 
           rel="noopener noreferrer"
           className="ml-auto inline-flex items-center gap-1 font-medium text-navy-700 hover:underline"
         >
-          View on DBnomics <ExternalLink size={12} />
+          View source <ExternalLink size={12} />
         </a>
       </div>
     </div>

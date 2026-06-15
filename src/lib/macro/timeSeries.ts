@@ -8,8 +8,8 @@
  * Zod is the recommended upgrade once the proxy/multi-source phase lands.
  */
 
-/** Sources we can pull from. The spike implements DBnomics only. */
-export type MacroSourceId = 'dbnomics';
+/** Sources we can pull from. DBnomics is browser-direct; FRED is proxy-only. */
+export type MacroSourceId = 'dbnomics' | 'fred';
 
 export interface Observation {
   /** Period label as the source reports it, e.g. "2024" or "2024-01". */

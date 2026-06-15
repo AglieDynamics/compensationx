@@ -187,7 +187,9 @@ export async function fetchDbnomicsSeries(
     res = await fetch(url, { signal: opts.signal, headers: { Accept: 'application/json' } });
   } catch (err) {
     if (err instanceof DOMException && err.name === 'AbortError') throw err;
-    throw new MacroFetchError('Could not reach DBnomics (offline or blocked).', 'network');
+    // Direct browser fetch failed (offline or a CORS preflight wall) — fall back
+    // to our serverless proxy, which fetches DBnomics server-side.
+    return fetchViaProxy(indicator, iso3, key, opts.signal);
   }
 
   if (res.status === 404) throw new MacroFetchError('DBnomics has no such series.', 'notFound', 404);
@@ -200,6 +202,40 @@ export async function fetchDbnomicsSeries(
     throw new MacroParseError('DBnomics response was not valid JSON.');
   }
 
+  const ts = parseDbnomicsSeries(json, { indicator, iso3 });
+  cache.set(key, { ts, expires: Date.now() + CACHE_TTL_MS });
+  return ts;
+}
+
+/** CORS/offline fallback: pull the same DBnomics series via our `/api/macro` proxy. */
+async function fetchViaProxy(
+  indicator: IndicatorPreset,
+  iso3: string,
+  key: string,
+  signal: AbortSignal | undefined,
+): Promise<TimeSeries> {
+  const code = dbnomicsSeriesCode(indicator.indicatorCode, iso3);
+  const params = new URLSearchParams({ source: 'dbnomics', series: code });
+  let res: Response;
+  try {
+    res = await fetch(`/api/macro?${params.toString()}`, { signal, headers: { Accept: 'application/json' } });
+  } catch (err) {
+    if (err instanceof DOMException && err.name === 'AbortError') throw err;
+    throw new MacroFetchError('Could not reach DBnomics directly or via the proxy (offline?).', 'network');
+  }
+  // `vite dev` has no functions → /api/macro returns SPA HTML; detect and report.
+  if (!(res.headers.get('content-type') ?? '').includes('application/json')) {
+    throw new MacroFetchError('The proxy isn’t available in this environment (run `vercel dev` or deploy).', 'network');
+  }
+  if (res.status === 404) throw new MacroFetchError('DBnomics has no such series.', 'notFound', 404);
+  if (!res.ok) throw new MacroFetchError(`Proxy returned HTTP ${res.status}.`, 'http', res.status);
+
+  let json: unknown;
+  try {
+    json = await res.json();
+  } catch {
+    throw new MacroParseError('Proxy returned invalid JSON.');
+  }
   const ts = parseDbnomicsSeries(json, { indicator, iso3 });
   cache.set(key, { ts, expires: Date.now() + CACHE_TTL_MS });
   return ts;
