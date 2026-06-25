@@ -12,6 +12,7 @@
     "test:watch": "vitest",
     "ingest": "tsx scripts/ingest.ts",
     "gen:employees": "tsx scripts/genEmployees.ts",
+    "convert:employees": "tsx scripts/convertFakeEmployees.ts",
     "typecheck": "tsc --noEmit",
     "lint": "eslint . --ext .ts,.tsx --max-warnings 0"
   },
