@@ -319,6 +319,7 @@ export interface CostStackRow {
   tCtc: number | null;
   overtimePerHead: number | null;
   contingentPerHead: number | null;
+  equityPerHead: number | null;
   twc: number | null;
   flexibleLoad: number | null;
   underMarket: boolean;
@@ -340,8 +341,10 @@ export function computeTotalCost(
     const tCtc = isNum(tcc) && isNum(employerContribution) ? tcc + employerContribution : null;
     const overtimePerHead = inp.overtimeSpendPerHead.value;
     const contingentPerHead = b.incumbents > 0 ? inp.contingentCostTotal.value / b.incumbents : 0;
+    const equityPerHead = inp.equityRewardPerHead.value;
     const flex = overtimePerHead + contingentPerHead;
-    const twc = isNum(tCtc) ? tCtc + flex : null;
+    // Equity/token is non-cash reward: it loads into TWC alongside flex, but never into TCC.
+    const twc = isNum(tCtc) ? tCtc + flex + equityPerHead : null;
     const flexibleLoad = isNum(twc) && twc > 0 ? flex / twc : null;
     const underMarket = isNum(b.deviationPct) && b.deviationPct < 0;
     const falseSavingsFlag =
@@ -357,6 +360,7 @@ export function computeTotalCost(
       tCtc,
       overtimePerHead,
       contingentPerHead,
+      equityPerHead,
       twc,
       flexibleLoad,
       underMarket,
@@ -366,6 +370,7 @@ export function computeTotalCost(
         inp.employerContributionPct.provenance,
         inp.overtimeSpendPerHead.provenance,
         inp.contingentCostTotal.provenance,
+        inp.equityRewardPerHead.provenance,
       ),
     };
   });

@@ -21,6 +21,7 @@ const LAYERS: BarSeries[] = [
   { key: 'employerContribution', label: 'Employer contribution', color: CHART.bandDark },
   { key: 'overtime', label: 'Overtime', color: CHART.amber },
   { key: 'contingent', label: 'Contingent', color: CHART.red },
+  { key: 'equity', label: 'Equity / token', color: CHART.green },
 ];
 
 const n = (v: number | null): number => (typeof v === 'number' && Number.isFinite(v) ? v : 0);
@@ -38,6 +39,7 @@ export function TotalCost() {
     employerContribution: n(r.employerContribution),
     overtime: n(r.overtimePerHead),
     contingent: n(r.contingentPerHead),
+    equity: n(r.equityPerHead),
   }));
 
   const totalTwc = rows.reduce((a, r) => a + n(r.twc) * r.headcount, 0);
@@ -67,13 +69,13 @@ export function TotalCost() {
 
       <Card
         title="Loaded cost stack per level (per head)"
-        subtitle="Each tier of the true cost — Base, Allowances, Bonus, Employer contribution, Overtime, Contingent."
+        subtitle="Each tier of the true cost — Base, Allowances, Bonus, Employer contribution, Overtime, Contingent, Equity / token."
         right={<ProvenanceChip provenance={provenance} />}
       >
         <CostStackBar data={stackData} layers={LAYERS} unit="GND_K" />
       </Card>
 
-      <Card title="Cost detail & false-savings" subtitle="t-CTC = TCC × (1 + employer contribution). TWC adds overtime + contingent per head." flush>
+      <Card title="Cost detail & false-savings" subtitle="t-CTC = TCC × (1 + employer contribution). TWC adds overtime + contingent + equity/token per head." flush>
         <TableScroll>
           <Table caption="Total workforce cost stack by level">
             <THead sticky>
@@ -84,6 +86,7 @@ export function TotalCost() {
                 <TH align="right">t-CTC</TH>
                 <TH align="right">Overtime</TH>
                 <TH align="right">Contingent /hd</TH>
+                <TH align="right">Equity /hd</TH>
                 <TH align="right" className="border-l border-border">TWC</TH>
                 <TH align="right">Flex load</TH>
                 <TH align="center" className="border-l border-border">Flag</TH>
@@ -98,6 +101,7 @@ export function TotalCost() {
                   <TD align="right" className="tabular-nums">{formatGndK(r.tCtc)}</TD>
                   <TD align="right" className="tabular-nums">{formatGndK(r.overtimePerHead)}</TD>
                   <TD align="right" className="tabular-nums">{formatGndK(r.contingentPerHead)}</TD>
+                  <TD align="right" className="tabular-nums">{formatGndK(r.equityPerHead)}</TD>
                   <TD align="right" className="border-l border-border/60 font-semibold tabular-nums text-ink">{formatGndK(r.twc)}</TD>
                   <TD align="right" className="tabular-nums">{formatPct(r.flexibleLoad, 0)}</TD>
                   <TD align="center" className="border-l border-border/60">

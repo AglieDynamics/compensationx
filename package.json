@@ -13,6 +13,7 @@
     "ingest": "tsx scripts/ingest.ts",
     "gen:employees": "tsx scripts/genEmployees.ts",
     "convert:employees": "tsx scripts/convertFakeEmployees.ts",
+    "convert:cryptopayscale": "tsx scripts/convertCryptoPayScale.ts",
     "typecheck": "tsc --noEmit",
     "lint": "eslint . --ext .ts,.tsx --max-warnings 0"
   },

@@ -87,6 +87,8 @@ export interface SegmentInputs {
   contingentCostTotal: number | null;
   employerContributionPct: number | null;
   productivityIndex: number | null;
+  /** Annualized equity + token reward per head (GND k/yr). Non-cash; loads into TWC, not TCC. */
+  equityRewardPerHead: number | null;
 }
 
 export type SegmentInputKey = keyof SegmentInputs;
@@ -101,6 +103,7 @@ export function defaultSegmentInputs(level: Level): SegmentInputs {
     contingentCostTotal: 0,
     employerContributionPct: EMPLOYER_CONTRIBUTION_PCT_DEFAULT,
     productivityIndex: null,
+    equityRewardPerHead: 0,
   };
 }
 
@@ -123,6 +126,7 @@ export const INPUT_META: InputMeta[] = [
   { key: 'productivityIndex', label: 'Productivity index', unit: '0–2 (1=expected)', template: 'value', hint: 'Optional explicit productivity; derived from the frontier if absent.', hasDefault: false },
   { key: 'overtimeSpendPerHead', label: 'Overtime spend', unit: 'GND k / yr', template: 'cost', hint: 'Actual overtime spend per head per year.', hasDefault: true },
   { key: 'contingentCostTotal', label: 'Contingent cost', unit: 'GND k / yr', template: 'cost', hint: 'Contractor / contingent spend for the segment (total).', hasDefault: true },
+  { key: 'equityRewardPerHead', label: 'Equity / token reward', unit: 'GND k / yr', template: 'cost', hint: 'Annualized equity + token reward per head. Non-cash — loads into Total Workforce Cost, not TCC.', hasDefault: true },
   { key: 'employerContributionPct', label: 'Employer contribution', unit: '× TCC', template: 'cost', hint: 'Benefits / employer contribution as a fraction of TCC.', hasDefault: true },
 ];
 
@@ -163,6 +167,7 @@ export interface ResolvedInputs {
   contingentCostTotal: Valued<number>;
   employerContributionPct: Valued<number>;
   productivityIndex: Valued<number> | null;
+  equityRewardPerHead: Valued<number>;
 }
 
 export type ResolvedInputsByLevel = Record<Level, ResolvedInputs>;
@@ -210,6 +215,7 @@ export function resolveSegmentInputs(
     contingentCostTotal: numeric('contingentCostTotal', 0, 'ASSUMED'),
     employerContributionPct: numeric('employerContributionPct', empDefault, empProv),
     productivityIndex: optional('productivityIndex'),
+    equityRewardPerHead: numeric('equityRewardPerHead', 0, 'ASSUMED'),
   };
 }
 

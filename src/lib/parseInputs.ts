@@ -37,6 +37,9 @@ const HEADER_TO_KEY: Record<string, SegmentInputKey> = {
   overtimeperhead: 'overtimeSpendPerHead',
   contingentcosttotal: 'contingentCostTotal',
   contingenttotal: 'contingentCostTotal',
+  equityrewardperhead: 'equityRewardPerHead',
+  equityreward: 'equityRewardPerHead',
+  equitytokenperhead: 'equityRewardPerHead',
   employercontributionpct: 'employerContributionPct',
   employercontribution: 'employerContributionPct',
 };
@@ -132,6 +135,7 @@ const TEMPLATE_COLUMNS: Record<InputTemplate, { header: string; sample: (level: 
   cost: [
     { header: 'OvertimeSpendPerHead', sample: () => '' },
     { header: 'ContingentCostTotal', sample: () => '' },
+    { header: 'EquityRewardPerHead', sample: () => '' },
     { header: 'EmployerContributionPct', sample: () => '' },
   ],
 };

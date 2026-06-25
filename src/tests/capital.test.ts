@@ -143,6 +143,15 @@ describe('Lens 5 — total workforce cost', () => {
     expect(m.twc!).toBeCloseTo(m.tCtc!, 6);
     expect(m.falseSavingsFlag).toBe(false);
   });
+
+  it('equity/token reward loads into TWC but never into TCC', () => {
+    const inputs = resolvedWith(() => ({ equityRewardPerHead: 50, employerContributionPct: 0.2 }));
+    const rows = computeTotalCost(bases, inputs, DEFAULT_ASSUMPTIONS);
+    const m = rows.find((r) => r.level === 'M')!;
+    expect(m.equityPerHead).toBe(50);
+    expect(m.tCtc!).toBeCloseTo(m.tcc! * 1.2, 6); // cash path unchanged by equity
+    expect(m.twc!).toBeCloseTo(m.tcc! * 1.2 + 50, 6); // equity added on top of t-CTC
+  });
 });
 
 describe('Lens 4 — cost of inaction', () => {

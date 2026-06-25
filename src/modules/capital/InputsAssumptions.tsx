@@ -21,6 +21,7 @@ const FIELD: Record<SegmentInputKey, { scale: number; unit: string }> = {
   productivityIndex: { scale: 1, unit: '' },
   overtimeSpendPerHead: { scale: 1, unit: 'k' },
   contingentCostTotal: { scale: 1, unit: 'k' },
+  equityRewardPerHead: { scale: 1, unit: 'k' },
   employerContributionPct: { scale: 100, unit: '%' },
 };
 const COLUMNS: SegmentInputKey[] = [
@@ -30,6 +31,7 @@ const COLUMNS: SegmentInputKey[] = [
   'productivityIndex',
   'overtimeSpendPerHead',
   'contingentCostTotal',
+  'equityRewardPerHead',
   'employerContributionPct',
 ];
 const PERCENT_KEYS: SegmentInputKey[] = ['baselineAttritionPct', 'employerContributionPct'];
